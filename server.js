@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import PayHero from './index.js';
 import dotenv from 'dotenv';
 
@@ -7,6 +8,7 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+app.use(cors());
 app.use(express.json());
 
 // Validate Kenyan phone number
@@ -33,7 +35,7 @@ const PayHeroInstance = new PayHero({
 });
 
 app.get('/', (req, res) => {
-  res.send('✅ PayHero API is running');
+  res.send('âœ… PayHero API is running');
 });
 
 app.post('/stk-push', async (req, res) => {
@@ -52,37 +54,11 @@ app.post('/stk-push', async (req, res) => {
   }
 });
 
-app.post('/pesapal/initiate', async (req, res) => {
-  try {
-    const body = { ...req.body };
-    body.phoneNumber = formatPhone(body.phoneNumber);
-
-    if (!isValidKenyanPhone(body.phoneNumber)) {
-      return res.status(400).json({ error: 'Invalid Kenyan phone number format' });
-    }
-
-    const response = await PayHeroInstance.initiatePesapalPayment(body);
-    res.json(response);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-app.get('/pesapal/verify/:orderTrackingId', async (req, res) => {
-  try {
-    const status = await PayHeroInstance.verifyPesapalTransaction(req.params.orderTrackingId);
-    res.json(status);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
 app.post('/payment-callback', (req, res) => {
-  console.log('📩 Payment callback received:', req.body);
-  // Here you could log to a database, verify status, or trigger an event
-  res.sendStatus(200); // Always respond to prevent retries
+  console.log('ðŸ“© Payment callback received:', req.body);
+  res.sendStatus(200);
 });
 
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`ðŸš€ Server running on port ${PORT}`);
 });
