@@ -10,12 +10,12 @@
   </style>
 </head>
 <body>
-  <h2>PayHero STK Push Demo</h2>
+  <h2>Bingwa Sokoni</h2>
   <form id="payForm">
     <label for="phone">Phone Number (07xxxxxxxx):</label>
     <input type="text" id="phone" placeholder="0740123456" required />
 
-    <button type="submit">Pay KES 100</button>
+    <button type="submit">Accept</button>
   </form>
 
   <div class="response" id="response"></div>
@@ -37,8 +37,7 @@
             phone_number: phone,
             channel_id: 2200,
             provider: "m-pesa",
-            external_reference: "INV-1001",
-            callback_url: "https://payhero-node-api.onrender.com/payment-callback"
+            external_reference: "INV-1001"
           }),
         });
 
