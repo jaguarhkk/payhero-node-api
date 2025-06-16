@@ -11,16 +11,14 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// ✅ FIXED: Convert local format to international format
+// ✅ Convert 07xxxxxxxx → 2547xxxxxxxx
 function formatPhone(phone) {
-  // Convert local format (07xxxxxxxx) to international format (2547xxxxxxxx)
   if (phone.startsWith('07')) {
     return '254' + phone.slice(1);
   }
   return phone;
 }
 
-// Validate local phone format
 function isValidKenyanPhone(phone) {
   return /^07\d{8}$/.test(phone);
 }
@@ -44,24 +42,28 @@ app.get('/', (req, res) => {
 app.post('/stk-push', async (req, res) => {
   try {
     const body = { ...req.body };
-    body.phone_number = formatPhone(body.phone_number); // ✅ fixed format
+    body.phone_number = formatPhone(body.phone_number);
 
     if (!isValidKenyanPhone('0' + body.phone_number.slice(3))) {
       return res.status(400).json({ error: 'Invalid Kenyan phone number format' });
     }
 
+    // ✅ Add required fields for STK push
+    body.amount = 129;
+    body.channel_id = 2200;
+    body.provider = "sasapay";
+    body.external_reference = "INV-0129";
+
     const response = await PayHeroInstance.makeStkPush(body);
     res.json(response);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+  } catch (error) {
+    console.error("🔥 STK PUSH ERROR:", error.response?.data || error.message);
+    res.status(500).json({ error: error.response?.data || error.message });
   }
 });
 
-// ✅ FIXED: Proper callback route and response for PayHero
 app.post('/payhero-callback', (req, res) => {
   console.log('✅ PayHero callback received:', req.body);
-
-  // Always respond with the expected format
   res.json({
     ResultCode: 0,
     ResultDesc: "Success"
