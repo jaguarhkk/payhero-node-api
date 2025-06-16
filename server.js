@@ -10,7 +10,9 @@ function formatPhone(phone) { if (phone.startsWith('07')) { return '254' + phone
 
 function isValidKenyanPhone(phone) { return /^07\d{8}$/.test(phone); }
 
-const encodedCredentials = Buffer.from(${process.env.API_USERNAME}:${process.env.API_PASSWORD}).toString('base64'); const basicAuthToken = Basic ${encodedCredentials};
+const encodedCredentials = Buffer .from(${process.env.API_USERNAME}:${process.env.API_PASSWORD}) .toString('base64');
+
+const basicAuthToken = Basic ${encodedCredentials};
 
 const PayHeroInstance = new PayHero({ Authorization: basicAuthToken, consumerKey: process.env.CONSUMER_KEY, consumerSecret: process.env.CONSUMER_SECRET, apiUrl: 'https://pay.pesapal.com/v3', callbackUrl: process.env.CALLBACK_URL, ipnId: process.env.PAYHERO_IPN_ID });
 
@@ -22,7 +24,7 @@ if (!isValidKenyanPhone('0' + body.phone_number.slice(3))) {
   return res.status(400).json({ error: 'Invalid Kenyan phone number format' });
 }
 
-body.amount = 129;
+body.amount = 100;
 body.channel_id = 2200;
 body.provider = "m-pesa";
 body.external_reference = "INV-0129";
