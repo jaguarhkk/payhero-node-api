@@ -35,7 +35,7 @@ const PayHeroInstance = new PayHero({
 });
 
 app.get('/', (req, res) => {
-  res.send('âœ… PayHero API is running');
+  res.send('✅ PayHero API is running');
 });
 
 app.post('/stk-push', async (req, res) => {
@@ -54,11 +54,17 @@ app.post('/stk-push', async (req, res) => {
   }
 });
 
-app.post('/payment-callback', (req, res) => {
-  console.log('ðŸ“© Payment callback received:', req.body);
-  res.sendStatus(200);
+// ✅ Updated callback route
+app.post('/payhero-callback', (req, res) => {
+  console.log('✅ PayHero callback received:', req.body);
+
+  // Respond with the structure PayHero expects
+  res.json({
+    ResultCode: 0,
+    ResultDesc: "Success"
+  });
 });
 
 app.listen(PORT, () => {
-  console.log(`ðŸš€ Server running on port ${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
