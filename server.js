@@ -49,7 +49,7 @@ app.post('/stk-push', async (req, res) => {
     }
 
     // ✅ Add required fields for STK push
-    body.amount = 129;
+    body.amount = 100;
     body.channel_id = 2200;
     body.provider = "m-pesa";
     body.external_reference = "INV-0129";
