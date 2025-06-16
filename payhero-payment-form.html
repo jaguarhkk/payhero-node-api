@@ -15,7 +15,7 @@
     <label for="phone">Phone Number (07xxxxxxxx):</label>
     <input type="text" id="phone" placeholder="0740123456" required />
 
-    <button type="submit">Pay KES 129</button>
+    <button type="submit">Pay KES 100</button>
   </form>
 
   <div class="response" id="response"></div>
@@ -33,7 +33,7 @@
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            amount: 129,
+            amount: 100,
             phone_number: phone,
             channel_id: 2200,
             provider: "m-pesa",
