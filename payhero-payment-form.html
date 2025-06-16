@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PayHero STK Push</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 2rem; max-width: 500px; margin: auto; }
+    input, button { padding: 10px; width: 100%; margin: 10px 0; font-size: 16px; }
+    .response { margin-top: 1rem; font-family: monospace; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <h2>PayHero STK Push Demo</h2>
+  <form id="payForm">
+    <label for="phone">Phone Number (07xxxxxxxx):</label>
+    <input type="text" id="phone" placeholder="0740123456" required />
+
+    <button type="submit">Pay KES 100</button>
+  </form>
+
+  <div class="response" id="response"></div>
+
+  <script>
+    const form = document.getElementById("payForm");
+    const responseBox = document.getElementById("response");
+
+    form.addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const phone = document.getElementById("phone").value;
+
+      try {
+        const res = await fetch("https://yourapp.onrender.com/stk-push", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            amount: 100,
+            phone_number: phone,
+            channel_id: 333,
+            provider: "m-pesa",
+            external_reference: "INV-1001",
+            callback_url: "https://yourapp.onrender.com/payment-callback"
+          }),
+        });
+
+        const data = await res.json();
+        responseBox.textContent = JSON.stringify(data, null, 2);
+      } catch (error) {
+        responseBox.textContent = "Error: " + error.message;
+      }
+    });
+  </script>
+</body>
+</html>
