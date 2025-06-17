@@ -19,7 +19,7 @@
 <body>
   <form id="payForm">
     <input id="phone" placeholder="07xxxxxxxx" required />
-    <button id="submitBtn" type="submit">Pay KES 129</button>
+    <button id="submitBtn" type="submit">Pay KES 100</button>
   </form>
   <pre id="response"></pre>
   <div id="status" class="status hidden"></div>
@@ -44,9 +44,9 @@
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            phone: phone,
+            phone_number: phone,
             amount: 100,
-            channel_id: 2200,
+            channel: 2552,
             provider: "m-pesa",
             external_reference: "INV-1001"
           })
