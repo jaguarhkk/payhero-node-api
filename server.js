@@ -1,56 +1,51 @@
-import express from 'express';
-import bodyParser from 'body-parser';
-import cors from 'cors';
-import PayHero from 'payhero-wrapper';
-import dotenv from 'dotenv';
+import express from "express";
+import cors from "cors";
+import bodyParser from "body-parser";
+import dotenv from "dotenv";
+import PayHero from "payhero-wrapper";
 
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const port = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(bodyParser.json());
 
-// Fix: Properly encode credentials for basic auth
-const encodedCredentials = Buffer.from(`${process.env.API_USERNAME}:${process.env.API_PASSWORD}`).toString('base64');
-const basicAuthToken = `Basic ${encodedCredentials}`;
-
-// Initialize PayHero SDK
 const payHero = new PayHero({
-  Authorization: basicAuthToken,
+  Authorization: process.env.PAYHERO_AUTH_TOKEN,
   pesapalConsumerKey: process.env.PESAPAL_CONSUMER_KEY,
   pesapalConsumerSecret: process.env.PESAPAL_CONSUMER_SECRET,
-  pesapalApiUrl: process.env.PESAPAL_API_URL,
+  pesapalApiUrl: "https://payments.pesapal.com/pesapalv3/api",
   pesapalCallbackUrl: process.env.PESAPAL_CALLBACK_URL,
-  pesapalIpnId: process.env.PESAPAL_IPN_ID
+  pesapalIpnId: process.env.PESAPAL_IPN_ID,
 });
 
-// STK Push Endpoint
-app.post('/stk', async (req, res) => {
+app.post("/stk", async (req, res) => {
+  const { PhoneNumber } = req.body;
+
+  const paymentDetails = {
+    PhoneNumber,
+    amount: 100,
+    channel: 2552,
+    provider: "m-pesa",
+    external_reference: "INV-1001",
+    callback_url: process.env.CALLBACK_URL,
+  };
+
   try {
-    const { phone } = req.body;
-
-    const paymentDetails = {
-      amount: 100, // fixed amount
-      PhoneNumber: phone,
-      channel: 2552,
-      provider: "m-pesa",
-      external_reference: "INV-1001",
-      callback_url: process.env.CALLBACK_URL
-    };
-
     const response = await payHero.makeStkPush(paymentDetails);
-    res.json(response);
+    res.status(200).json(response);
   } catch (error) {
-    console.error('Payment error:', error.response?.data || error.message || error);
-    res.status(500).json({
-      error: error.response?.data || error.message || 'Something went wrong',
-    });
+    console.error("STK Push Error:", error);
+    res.status(500).json({ error });
   }
 });
 
-// Start Server
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+app.get("/", (req, res) => {
+  res.send("✅ PayHero STK API is running");
+});
+
+app.listen(port, () => {
+  console.log(`✅ Server listening on port ${port}`);
 });
