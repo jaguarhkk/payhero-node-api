@@ -34,7 +34,7 @@ app.post('/stk', async (req, res) => {
     const paymentDetails = {
       amount: 100, // fixed amount
       phone_number: phone,
-      channel_id: 2200,
+      channel: 2552,
       provider: "m-pesa",
       external_reference: "INV-1001",
       callback_url: process.env.CALLBACK_URL
