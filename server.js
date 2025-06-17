@@ -1,3 +1,4 @@
+
 import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
@@ -13,12 +14,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 const payHero = new PayHero({
-  Authorization: process.env.PAYHERO_AUTH_TOKEN,
-  pesapalConsumerKey: process.env.PESAPAL_CONSUMER_KEY,
-  pesapalConsumerSecret: process.env.PESAPAL_CONSUMER_SECRET,
-  pesapalApiUrl: "https://payments.pesapal.com/pesapalv3/api",
-  pesapalCallbackUrl: process.env.PESAPAL_CALLBACK_URL,
-  pesapalIpnId: process.env.PESAPAL_IPN_ID,
+  Authorization: process.env.PAYHERO_AUTH_TOKEN
 });
 
 app.post("/stk", async (req, res) => {
