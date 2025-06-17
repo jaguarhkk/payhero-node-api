@@ -22,7 +22,7 @@ const payHero = new PayHero({
 });
 
 app.post("/stk", async (req, res) => {
-  const { PhoneNumber } = req.body;
+  const PhoneNumber = req.body.PhoneNumber || req.body.phone || req.body.phone_number;
 
   const paymentDetails = {
     PhoneNumber,
