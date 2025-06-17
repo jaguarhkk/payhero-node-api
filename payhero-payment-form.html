@@ -1,50 +1,80 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>PayHero STK Push</title>
+  <title>STK Push Form</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 2rem; max-width: 500px; margin: auto; }
-    input, button { padding: 10px; width: 100%; margin: 10px 0; font-size: 16px; }
-    .response { margin-top: 1rem; font-family: monospace; white-space: pre-wrap; }
+    .loading {
+      pointer-events: none;
+      opacity: 0.6;
+    }
+    .hidden {
+      display: none;
+    }
+    .status {
+      font-size: 24px;
+      margin-top: 20px;
+    }
   </style>
 </head>
 <body>
-  <h2>Bingwa Sokoni</h2>
   <form id="payForm">
-    <label for="phone">Phone Number (07xxxxxxxx):</label>
-    <input type="text" id="phone" placeholder="0740123456" required />
-
-    <button type="submit">Accept</button>
+    <input id="phone" placeholder="07xxxxxxxx" required />
+    <button id="submitBtn" type="submit">Pay KES 129</button>
   </form>
-
-  <div class="response" id="response"></div>
+  <pre id="response"></pre>
+  <div id="status" class="status hidden"></div>
 
   <script>
-    const form = document.getElementById("payForm");
+    const payForm = document.getElementById("payForm");
     const responseBox = document.getElementById("response");
+    const submitBtn = document.getElementById("submitBtn");
+    const statusDiv = document.getElementById("status");
 
-    form.addEventListener("submit", async function (e) {
+    payForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       const phone = document.getElementById("phone").value;
+      statusDiv.classList.add("hidden");
+      submitBtn.textContent = "Processing...";
+      submitBtn.classList.add("loading");
 
       try {
-        const res = await fetch("https://payhero-node-api.onrender.com/stk-push", {
+        const res = await fetch("https://payhero-node-api.onrender.com/stk", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify({
+            phone: phone,
             amount: 100,
-            phone_number: phone,
             channel_id: 2200,
-            provider: "sasapay",
+            provider: "m-pesa",
             external_reference: "INV-1001"
-          }),
+          })
         });
+
+        const contentType = res.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          const text = await res.text();
+          throw new Error("Invalid JSON: " + text.slice(0, 100));
+        }
 
         const data = await res.json();
         responseBox.textContent = JSON.stringify(data, null, 2);
+
+        if (data.success || data.status === "QUEUED") {
+          statusDiv.textContent = "✅ Payment Request Sent!";
+        } else {
+          statusDiv.textContent = "❌ Payment Failed.";
+        }
+
+        statusDiv.classList.remove("hidden");
       } catch (error) {
         responseBox.textContent = "Error: " + error.message;
+        statusDiv.textContent = "❌ Something went wrong.";
+        statusDiv.classList.remove("hidden");
+      } finally {
+        submitBtn.textContent = "Pay KES 100";
+        submitBtn.classList.remove("loading");
       }
     });
   </script>
